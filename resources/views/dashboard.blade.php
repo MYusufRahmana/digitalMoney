@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aturduit - Manajemen Keuangan by alfathaannn</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- Three.js for Vanta -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Vanta Background -->
+    <div id="vanta-bg"></div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <span class="material-icons-round">account_balance_wallet</span>
+                <span class="brand-text">Aturduit</span>
+            </div>
+
+            <div class="nav-menu">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <span class="material-icons-round">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="transactions">
+                    <span class="material-icons-round">receipt_long</span>
+                    <span>Transaksi</span>
+                </a>
+                <a href="#" class="nav-item" data-page="pockets">
+                    <span class="material-icons-round">wallet</span>
+                    <span>Kantong</span>
+                </a>
+                <a href="#" class="nav-item" data-page="statistics">
+                    <span class="material-icons-round">analytics</span>
+                    <span>Statistik</span>
+                </a>
+            </div>
+
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <span class="material-icons-round">light_mode</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Page: Dashboard -->
+        <div class="page active" id="page-dashboard">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Selamat datang kembali!</p>
+                </div>
+            </div>
+
+            <!-- Balance Card -->
+            <div class="balance-card glass-card">
+                <div class="balance-header">
+                    <div>
+                        <p class="balance-label">Saldo Utama</p>
+                        <h2 class="balance-amount" id="mainBalance">Rp 0</h2>
+                    </div>
+                    <div class="balance-icon">
+                        <span class="material-icons-round">account_balance</span>
+                    </div>
+                </div>
+                <div class="balance-footer">
+                    <div class="balance-stat">
+                        <span class="material-icons-round stat-icon success">trending_up</span>
+                        <div>
+                            <p class="stat-label">Pemasukan</p>
+                            <p class="stat-value success" id="totalIncome">Rp 0</p>
+                        </div>
+                    </div>
+                    <div class="balance-stat">
+                        <span class="material-icons-round stat-icon danger">trending_down</span>
+                        <div>
+                            <p class="stat-label">Pengeluaran</p>
+                            <p class="stat-value danger" id="totalExpense">Rp 0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="action-card glass-card" onclick="showAddIncomeModal()">
+                    <div class="action-icon success-bg">
+                        <span class="material-icons-round">add_circle</span>
+                    </div>
+                    <div class="action-content">
+                        <h3 class="action-title">Tambah Pemasukan</h3>
+                        <p class="action-desc">Catat pendapatan Anda</p>
+                    </div>
+                </button>
+
+                <button class="action-card glass-card" onclick="showAddExpenseModal()">
+                    <div class="action-icon danger-bg">
+                        <span class="material-icons-round">remove_circle</span>
+                    </div>
+                    <div class="action-content">
+                        <h3 class="action-title">Tambah Pengeluaran</h3>
+                        <p class="action-desc">Catat pengeluaran Anda</p>
+                    </div>
+                </button>
+
+                <button class="action-card glass-card" onclick="navigateToPage('pockets')">
+                    <div class="action-icon primary-bg">
+                        <span class="material-icons-round">wallet</span>
+                    </div>
+                    <div class="action-content">
+                        <h3 class="action-title">Kelola Kantong</h3>
+                        <p class="action-desc">Atur alokasi dana</p>
+                    </div>
+                </button>
+
+                <button class="action-card glass-card" onclick="showSettingsModal()">
+                    <div class="action-icon accent-bg">
+                        <span class="material-icons-round">settings</span>
+                    </div>
+                    <div class="action-content">
+                        <h3 class="action-title">Pengaturan</h3>
+                        <p class="action-desc">Ekspor & Impor data</p>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="section-card glass-card">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="material-icons-round">history</span>
+                        Transaksi Terbaru
+                    </h2>
+                    <button class="btn-link" onclick="navigateToPage('transactions')">
+                        Lihat Semua
+                        <span class="material-icons-round">arrow_forward</span>
+                    </button>
+                </div>
+                <div id="recentTransactionsList" class="transactions-list"></div>
+            </div>
+        </div>
+
+        <!-- Page: Transactions -->
+        <div class="page" id="page-transactions">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Riwayat Transaksi</h1>
+                    <p class="page-subtitle">Semua aktivitas keuangan Anda</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-primary" onclick="showAddIncomeModal()">
+                        <span class="material-icons-round">add</span>
+                        Pemasukan
+                    </button>
+                    <button class="btn-danger" onclick="showAddExpenseModal()">
+                        <span class="material-icons-round">remove</span>
+                        Pengeluaran
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Options -->
+            <div class="filter-bar glass-card">
+                <div class="filter-group">
+                    <label class="filter-label">Tipe</label>
+                    <select id="filterType" class="filter-select" onchange="filterTransactions()">
+                        <option value="all">Semua</option>
+                        <option value="income">Pemasukan</option>
+                        <option value="expense">Pengeluaran</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Periode</label>
+                    <select id="filterPeriod" class="filter-select" onchange="filterTransactions()">
+                        <option value="all">Semua</option>
+                        <option value="today">Hari Ini</option>
+                        <option value="week">Minggu Ini</option>
+                        <option value="month">Bulan Ini</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section-card glass-card">
+                <div id="allTransactionsList" class="transactions-list"></div>
+            </div>
+        </div>
+
+        <!-- Page: Pockets -->
+        <div class="page" id="page-pockets">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Kantong Dana</h1>
+                    <p class="page-subtitle">Pisahkan dana untuk berbagai kebutuhan</p>
+                </div>
+                <button class="btn-primary" onclick="showAddPocketModal()">
+                    <span class="material-icons-round">add</span>
+                    Tambah Kantong
+                </button>
+            </div>
+
+            <div id="pocketsList" class="pockets-grid"></div>
+        </div>
+
+        <!-- Page: Statistics -->
+        <div class="page" id="page-statistics">
+            <div class="page-header">
+                <h1 class="page-title">Statistik & Analisis</h1>
+                <p class="page-subtitle">Visualisasi data keuangan Anda</p>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="stats-grid">
+                <div class="stat-card glass-card">
+                    <div class="stat-icon-wrapper success-bg">
+                        <span class="material-icons-round">arrow_upward</span>
+                    </div>
+                    <div class="stat-details">
+                        <p class="stat-label">Total Pemasukan</p>
+                        <h3 class="stat-amount" id="statTotalIncome">Rp 0</h3>
+                    </div>
+                </div>
+
+                <div class="stat-card glass-card">
+                    <div class="stat-icon-wrapper danger-bg">
+                        <span class="material-icons-round">arrow_downward</span>
+                    </div>
+                    <div class="stat-details">
+                        <p class="stat-label">Total Pengeluaran</p>
+                        <h3 class="stat-amount" id="statTotalExpense">Rp 0</h3>
+                    </div>
+                </div>
+
+                <div class="stat-card glass-card">
+                    <div class="stat-icon-wrapper primary-bg">
+                        <span class="material-icons-round">account_balance_wallet</span>
+                    </div>
+                    <div class="stat-details">
+                        <p class="stat-label">Dana di Kantong</p>
+                        <h3 class="stat-amount" id="statPocketsTotal">Rp 0</h3>
+                    </div>
+                </div>
+
+                <div class="stat-card glass-card">
+                    <div class="stat-icon-wrapper accent-bg">
+                        <span class="material-icons-round">savings</span>
+                    </div>
+                    <div class="stat-details">
+                        <p class="stat-label">Sisa Saldo</p>
+                        <h3 class="stat-amount" id="statMainBalance">Rp 0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="section-card glass-card">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="material-icons-round">bar_chart</span>
+                        Tren 7 Hari Terakhir
+                    </h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="transactionChart" width="800" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Pocket Distribution -->
+            <div class="section-card glass-card">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="material-icons-round">pie_chart</span>
+                        Distribusi Kantong
+                    </h2>
+                </div>
+                <div id="pocketDistribution" class="pocket-distribution"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Bottom Bar -->
+    <nav class="mobile-navbar">
+        <a href="#" class="mobile-nav-item active" data-page="dashboard">
+            <span class="material-icons-round">dashboard</span>
+            <span>Dashboard</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-page="transactions">
+            <span class="material-icons-round">receipt_long</span>
+            <span>Transaksi</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-page="pockets">
+            <span class="material-icons-round">wallet</span>
+            <span>Kantong</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-page="statistics">
+            <span class="material-icons-round">analytics</span>
+            <span>Statistik</span>
+        </a>
+    </nav>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

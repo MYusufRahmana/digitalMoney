@@ -6,27 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('account_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->enum('type',['income','expense']);
+            $table->enum('type', ['income', 'expense'])->comment('income = pemasukkan, expense = pengeluaran');
+            $table->enum('payment_method', ['cash', 'bank', 'stock', 'e-wallet', 'credit_card'])->default('cash')->comment('Jenis uang/alat bayar');
             $table->decimal('amount', 15, 2);
-            $table->string('category')->nullable();
+            $table->string('category');
             $table->text('description')->nullable();
-            $table->date('transaction_date')->nullable();
+            $table->date('transaction_date');
             $table->timestamps();
+
+            // Index untuk performa query yang lebih baik
+            $table->index(['user_id', 'transaction_date']);
+            $table->index(['user_id', 'type']);
+            $table->index(['user_id', 'payment_method']);
+            $table->index(['user_id', 'category']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('transactions');
